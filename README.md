@@ -1,10 +1,8 @@
 This project is a video facial expression recognization project
 
-Network structure is based on VGG16+LSTM
+Network structure is based on VGG16+LSTM,implemented by Pytorch0.2
 
-All code is implemented by Pytorch0.2
-
-This is also my first Pytorch project
+This is also my first Pytorch project,now can only process one video per batchsize
 
 本项目是一个基于视频的面部表情分析项目
 
