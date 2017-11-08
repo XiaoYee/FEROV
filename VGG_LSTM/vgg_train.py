@@ -7,6 +7,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torch.backends.cudnn as cudnn
 from torchvision import datasets, transforms
+import torchvision.models as models
 from torch.autograd import Variable
 import numpy
 
@@ -45,7 +46,7 @@ max_epochs    = max_batches*batch_size/nsamples+1
 use_cuda      = True
 seed          = int(time.time())
 eps           = 1e-5
-save_interval = 20      #epoches
+save_interval = 100      #epoches
 
 torch.manual_seed(seed)
 
@@ -54,7 +55,22 @@ if use_cuda:
     torch.cuda.manual_seed(seed)
 
 model         = LSTMNet()
-# model = torch.load('backup/model_0020.pth')
+
+# pretrained model 
+# vgg16 = torch.load('vgg16.pth')
+# model_dict = model.state_dict()
+# pretrained_dict = {k: v for k, v in vgg16.items() if k in model_dict}
+# model_dict.update(pretrained_dict)
+# model.load_state_dict(model_dict)
+
+# vgg16 = models.vgg16(pretrained=True)
+# model_dict = model.state_dict()
+# pretrained_dict = {k: v for k, v in vgg16.state_dict().items() if k in model_dict}
+# model_dict.update(pretrained_dict)
+# model.load_state_dict(model_dict)
+
+#load model
+model = torch.load('backup/model_0800.pth')
 
 processed_batches = model.seen/batch_size
 
@@ -101,6 +117,7 @@ def train(epoch):
 
     transform=transforms.Compose([
                            transforms.ToTensor(),
+                           # transforms.Normalize((0.5, 0.5, 0.5),(0.5, 0.5, 0.5))
                        ])
 
     train_loader = torch.utils.data.DataLoader(
@@ -147,6 +164,7 @@ def train(epoch):
 
     if (epoch+1) % save_interval == 0:
         logging('save weights to %s/model_%04d.pth' % (backupdir, epoch+1))
+        model.seen = (epoch + 1) * len(train_loader.dataset)
         torch.save(model,'%s/model_%04d.pth' % (backupdir, epoch+1))
 
 
